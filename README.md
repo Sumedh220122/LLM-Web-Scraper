@@ -3,9 +3,9 @@
 The following project provides a tool for automating the process of web scraping by making use of LLM's.
 
 The Description of the various .py files are as follows:
-1. llm_extractor.py - makes use of the cohere llm in order to detect information pertaining to a structured schema.
-   Documentation for the Cohere LLM is https://python.langchain.com/docs/integrations/providers/cohere/
-2. scraping.py - uses playwright(a browser automation tool) to interact with the website to be scraped. The file also provides for functions to remove unwanted tags in the html structure of the document which makes it easy      for the llm to focus on important content
+1. llm_extractor.py - makes use of the gemini llm in order to detect information pertaining to a structured schema.
+   Documentation for the Gemini LLM is https://python.langchain.com/docs/integrations/chat/google_generative_ai/
+2. scraping.py - uses playwright(a browser automation tool) to interact with the website to be scraped. The file also provides for functions to remove unwanted tags in the html structure of the document which makes it easy for the llm to focus on important content
 3. schema.py - defines the specific schema that is to be provided to the llm for information extraction.
 4. main.py - main file running the extraction application
 
