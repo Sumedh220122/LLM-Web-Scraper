@@ -1,14 +1,14 @@
 import os
 
-from langchain_cohere import ChatCohere
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from langchain_core.messages import AIMessage
 
 
 def extract(content: str, **kwargs):
-    llm = ChatCohere(
-            cohere_api_key = "")
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"))
+
 
     if 'schema_pydantic' in kwargs:
         schema = kwargs["schema_pydantic"]
