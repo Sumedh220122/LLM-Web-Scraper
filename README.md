@@ -25,12 +25,6 @@ The application is deployed on a fast-api server.
    ```
    In place of ? paste the url of the website to be scraped.
 
-# Examples
-![image](https://github.com/user-attachments/assets/0580ccff-0dbe-4ba8-89a7-3776cf27606c)
-
-
-Customer review extraction for the website - https://2717recovery.com/products/recovery-cream
-
 
  
 
