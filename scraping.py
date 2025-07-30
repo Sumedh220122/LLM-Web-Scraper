@@ -1,73 +1,88 @@
-import asyncio
-import pprint
+"""
+Module containing website scraping utilities
+"""
 
+import requests
+from typing import List
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 
 
-def remove_unwanted_tags(html_content, unwanted_tags=["script", "style"]):
+async def scrape_website(url: str) -> str:
+    """Scrape the website at the given URL and return its HTML content."""
+    async with async_playwright() as p:
+        try:
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
+            await page.goto(url)
+            page_source = await page.content()
+        except (ConnectionError, ValueError) as e:
+            return f"Connection error: {e}"
+        finally:
+            await browser.close()
+    
+    return page_source
+
+def extract_body_content(html_content) -> str:
+    """Extract the body content from the HTML."""
     soup = BeautifulSoup(html_content, 'html.parser')
+    body_content = soup.body
+    if body_content:
+        return str(body_content)
+    return ""
 
-    for tag in unwanted_tags:
-        for element in soup.find_all(tag):
-            element.decompose()
+def clean_body_content(body_content) -> str:
+    """Clean the body content by removing unwanted tags."""
+    soup = BeautifulSoup(body_content, 'html.parser')
+    
+    for script_or_style in soup(['script', 'style']):
+        script_or_style.extract()
 
-    return str(soup)
-
-
-def extract_tags(html_content, tags: list[str]):
-   
-    soup = BeautifulSoup(html_content, 'html.parser')
-    text_parts = []
-
-
-    for tag in tags:
-        elements = soup.find_all(tag)
-        for element in elements:
-            if tag == "a":
-                href = element.get('href')
-                if href:
-                    text_parts.append(f"{element.get_text()} ({href})")
-                else:
-                    text_parts.append(element.get_text())
-            else:
-                text_parts.append(element.get_text())
-
-    return ' '.join(text_parts)
-
-
-def remove_unessesary_lines(content):
-    lines = content.split("\n")
-
-    stripped_lines = [line.strip() for line in lines]
-
-    non_empty_lines = [line for line in stripped_lines if line]
-
-    seen = set()
-    deduped_lines = [line for line in non_empty_lines if not (
-        line in seen or seen.add(line))]
-
-    cleaned_content = "".join(deduped_lines)
+    cleaned_content = soup.get_text(separator = "\n")
+    cleaned_content = "\n".join(
+        line.strip() for line in cleaned_content.splitlines() if line.strip()
+    )
 
     return cleaned_content
 
+def extract_tags(url: str) -> List[str]:
+    """Extract all a tags from the given html content to identify potential paginated related ones"""    
+    tags = []
 
-async def ascrape_playwright(url, tags: list[str] = ["div", "p", "span"]) -> str:
-    print("Started scraping...")
-    results = ""
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+    a_tags = soup.find_all("a")
+
+    for tag in a_tags:
+        tags.append(str(tag))
+
+    return tags
+
+async def click_and_scrape(url: str, selector: str) -> str:
+    """Click selectors, navigate to the next page and extract it's url"""
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+        await page.goto(url)
+
+        await page.wait_for_load_state("networkidle")
+
         try:
-            page = await browser.new_page()
-            await page.goto(url)
+            await page.click(selector) 
+            await page.wait_for_load_state("networkidle")
 
-            page_source = await page.content()
+            updated_url = page.url
 
-            results = remove_unessesary_lines(extract_tags(remove_unwanted_tags(
-                page_source), tags))
+            return updated_url
 
-            print("Content scraped")
         except Exception as e:
-            results = f"Error: {e}"
+            print("Error clicking pagination link:", e)
+
         await browser.close()
-    return results
+
+def chunk_content(content: str, chunk_size: int = 6000) -> List[str]:
+    """Chunk the content into smaller parts."""
+    return [
+        content[i: i + chunk_size] for i in range(0, len(content), chunk_size)
+    ]

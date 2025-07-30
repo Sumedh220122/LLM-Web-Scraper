@@ -1,6 +1,14 @@
+"""
+Model for quotes schema
+"""
+
+from typing import List
 from pydantic import BaseModel, Field
 
-class SchemaReviews(BaseModel):
+class Quote(BaseModel):
     author_name: str
-    rating: float
-    review_content: str
+    quote: str
+    tags: List[str]
+
+class Quotes(BaseModel):
+    quotes: List[Quote]        
