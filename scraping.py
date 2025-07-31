@@ -45,12 +45,13 @@ def clean_body_content(body_content) -> str:
 
     return cleaned_content
 
-def extract_tags(url: str) -> List[str]:
+async def extract_tags(url: str) -> List[str]:
     """Extract all a tags from the given html content to identify potential paginated related ones"""    
     tags = []
 
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
+    content = await scrape_website(url)
+
+    soup = BeautifulSoup(content, 'html.parser')
     
     a_tags = soup.find_all("a")
 
@@ -86,3 +87,8 @@ def chunk_content(content: str, chunk_size: int = 6000) -> List[str]:
     return [
         content[i: i + chunk_size] for i in range(0, len(content), chunk_size)
     ]
+
+if __name__ == "__main__":
+    import asyncio
+    tags = asyncio.run(extract_tags("https://www.reviews.io/company-reviews/store/quote"))
+    print(tags)
