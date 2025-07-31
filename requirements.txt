@@ -1,8 +1,9 @@
 langchain-community
-langchain-google-genai
+langchain-cohere
 ppprint
 fastapi
 uvicorn
 playwright
 beautifulsoup4
 python-dotenv
+requests
