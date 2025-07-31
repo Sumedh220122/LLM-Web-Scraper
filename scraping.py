@@ -87,8 +87,3 @@ def chunk_content(content: str, chunk_size: int = 6000) -> List[str]:
     return [
         content[i: i + chunk_size] for i in range(0, len(content), chunk_size)
     ]
-
-if __name__ == "__main__":
-    import asyncio
-    tags = asyncio.run(extract_tags("https://www.reviews.io/company-reviews/store/quote"))
-    print(tags)
