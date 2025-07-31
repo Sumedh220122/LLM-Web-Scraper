@@ -3,7 +3,7 @@ The module for main LLM extractor that extracts quotes from a quote website
 """
 
 from typing import List
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_cohere import ChatCohere
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from dotenv import load_dotenv
@@ -18,18 +18,17 @@ from prompts import (
     get_selector_extraction_prompt
 )
 
-from schema import Quotes
+from schema import Quotes, Quote
 
 load_dotenv()
 
 class LLMExtractor:
     def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-pro", 
+        self.llm = ChatCohere(
             temperature=0
         )
     
-    def parse_quotes_with_llm(self, content: List[str]) -> Quotes:
+    def parse_quotes_with_llm(self, content: List[str]) -> List[Quotes]:
         """
         Parse quotes from website url content
         Params:
@@ -124,7 +123,7 @@ class LLMExtractor:
 
         return new_url
     
-    async def extract_quotes(self, url: str, max_pages: int = 1) -> List[Quotes]:
+    async def extract_quotes(self, url: str, max_pages: int = 2) -> List[Quote]:
         """
         Main function to recursively extract paginated quotes from a given website
         Params:
@@ -144,9 +143,9 @@ class LLMExtractor:
         cleaned_content = clean_body_content(body_content)
         chunks = chunk_content(cleaned_content, chunk_size=800)
 
-        print(f"Passing content of {url} to gemini")
-        parsed_quotes = self.parse_with_llm(chunks)
-        quotes.append(parsed_quotes)
+        print(f"Passing content of {url} to llm")
+        parsed_quotes = self.parse_quotes_with_llm(chunks)
+        quotes.extend([quote_obj for list_of_quotes in parsed_quotes for quote_obj in list_of_quotes])
 
         print(f"Found quotes: {len(quotes)}")
 
@@ -154,6 +153,7 @@ class LLMExtractor:
 
         paginated_results = await self.extract_quotes(url = new_url, max_pages = max_pages - 1)
 
-        quotes.extend(paginated_results)
+        if paginated_results != []:
+            quotes.extend(paginated_results)
 
         return quotes

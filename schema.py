@@ -3,7 +3,7 @@ Model for quotes schema
 """
 
 from typing import List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 class Quote(BaseModel):
     author_name: str
