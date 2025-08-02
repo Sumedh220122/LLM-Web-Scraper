@@ -42,7 +42,7 @@ uvicorn main:app --host 127.0.0.1 --port 5049 --log-level debug
 
 ### API Endpoints
 
-- **POST `/api/v1/reviews/`**
+- **POST `/api/v1/quotes/`**
   - **Query Parameter:** `url` (string) — The URL of the page to scrape.
   - **Description:** Extracts quotes from the given URL (and paginated pages).
   - **Response:**
@@ -57,5 +57,6 @@ uvicorn main:app --host 127.0.0.1 --port 5049 --log-level debug
 
 
  
+
 
 
