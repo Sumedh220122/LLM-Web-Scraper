@@ -55,9 +55,7 @@ uvicorn main:app --host 127.0.0.1 --port 5049 --log-level debug
 - Ensure your Cohere API key (or other LLM provider credentials) is set up in your environment.
 - Playwright requires Chromium to be installed (handled by `playwright install`).
 
-## License
-MIT
-
 
  
+
 
