@@ -8,7 +8,7 @@ app = FastAPI()
 def root():
     return {"message": "Hello World"}
 
-@app.post("/api/v1/reviews/")
+@app.post("/api/v1/quotes/")
 async def get_reviews(
     url: str = Query(..., description="URL of the page to scrape")
 ):
@@ -22,3 +22,4 @@ async def get_reviews(
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=5049)
+
