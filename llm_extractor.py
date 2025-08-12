@@ -108,7 +108,7 @@ class LLMExtractor:
         Returns:
             new_url: str -> The url after pagination
         """
-        tags = extract_tags(url)
+        tags = await extract_tags(url)
 
         tags_str = "\n".join(tags)
         pagination_tag = self.find_pagination_tag(tags_str)
