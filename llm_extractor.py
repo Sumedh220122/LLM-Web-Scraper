@@ -141,7 +141,7 @@ class LLMExtractor:
         scraped_result = await scrape_website(url)
         body_content = extract_body_content(scraped_result)
         cleaned_content = clean_body_content(body_content)
-        chunks = chunk_content(cleaned_content, chunk_size=800)
+        chunks = chunk_content(cleaned_content, chunk_size=1200)
 
         print(f"Passing content of {url} to llm")
         parsed_quotes = self.parse_quotes_with_llm(chunks)
